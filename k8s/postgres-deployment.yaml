@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: postgres
+  template:
+    metadata:
+      labels:
+        component: postgres
+    spec:
+      # setting a persistent volume
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            # the persistent volume must follow specifications of "dataabse-persistent-volume-claim" defined in "database-persistent-volume-claim.yaml"
+            claimName: database-persistent-volume-claim
+      containers:
+        - name: postgres
+          image: postgres
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage # same of the one before
+              # directory in with postgres store data
+              mountPath: /var/lib/postgresql/data
+              # folder inside directory when data will be stored by postgres.
+              # Container in mountPath in subPath in Claim volume
+              subPath: postgres
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword
+                  key: PGPASSWORD

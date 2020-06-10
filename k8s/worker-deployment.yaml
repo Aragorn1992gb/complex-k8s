@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: worker
+  template:
+    metadata:
+      labels:
+        component: worker
+    spec:
+      containers:
+        - name: worker
+          image: aragorn1992/multi-worker
+          env:
+            - name: REDIS_HOST
+              value: redis-cluster-ip-service # refers to name of "redis-cluster-ip-service.yaml"
+            - name: REDIS_PORT
+              value: '6379' # refers to port of "redis-cluster-ip-service.yaml. Must be set as string"

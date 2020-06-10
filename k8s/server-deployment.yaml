@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: server
+  template:
+    metadata:
+      labels:
+        component: server
+    spec:
+      containers:
+        - name: server
+          #image: cygnetops/multi-server-pgfix-5-11
+          image: aragorn1992/multi-server
+          ports:
+            - containerPort: 5000
+          env:
+            - name: REDIS_HOST
+              value: redis-cluster-ip-service # refers to name of "redis-cluster-ip-service.yaml"
+            - name: REDIS_PORT
+              value: '6379' # refers to port of "redis-cluster-ip-service.yaml. Must be set as string"
+            - name: PGUSER
+              value: postgres
+            - name: PGHOST # it contains the connection string (URL)
+              value: postgres-cluster-ip-service # refers to name of "postgres-cluster-ip-service.yaml"
+            - name: PGPORT
+              value: '5432'
+            - name: PGDATABASE
+              value: postgres
+            - name: PGPASSWORD # name not associated to Secrets. It is the real Environment Variable
+              valueFrom:
+                secretKeyRef:
+                  name: pgpassword # Secret name
+                  key: PGPASSWORD # Secret key-value pair
