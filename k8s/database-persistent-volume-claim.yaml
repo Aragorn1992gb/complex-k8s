@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: database-persistent-volume-persistent-volume-claim
+    name: database-persistent-volume-claim
 # specifications of the resources needed from pod (attached to the pod) requested to k8s
 spec:
     accessModes:
